@@ -14,6 +14,11 @@ class PositionalEncoding(nn.Module):
         # TODO: compute the positional encoding                                        #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
 
         pass
 
@@ -50,6 +55,7 @@ class HarryPotterTransformer(nn.Module):
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         self.embedding = nn.Embedding(self.vocab_size,self.feature_size)
+        self.pos_encoding = PositionalEncoding(self.feature_size)
         encoder_layer = nn.TransformerEncoderLayer(self.feature_size, self.num_heads, 4*self.feature_size, 0.1)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
         self.decoder = nn.Linear(self.feature_size,self.vocab_size)
@@ -67,7 +73,10 @@ class HarryPotterTransformer(nn.Module):
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         embedded_x = self.embedding(x)
-        encoded_x = self.transformer_encoder(embedded_x)
+        pos_x = self.pos_encoding(embedded_x)
+        pos_x = pos_x.permute(1,0,2)
+        encoded_x = self.transformer_encoder(pos_x)
+        encoded_x = encoded_x.permute(1,0,2)
         x = self.decoder(encoded_x)
 
         pass
