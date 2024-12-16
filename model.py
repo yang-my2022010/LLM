@@ -49,7 +49,10 @@ class HarryPotterTransformer(nn.Module):
         # TODO: define the network                                                     #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
+        self.embedding = nn.Embedding(self.vocab_size,self.feature_size)
+        encoder_layer = nn.TransformerEncoderLayer(self.feature_size, self.num_heads, 4*self.feature_size, 0.1)
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+        self.decoder = nn.Linear(self.feature_size,self.vocab_size)
         pass
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -63,6 +66,9 @@ class HarryPotterTransformer(nn.Module):
         # TODO: finish the forward pass                                                #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        embedded_x = self.embedding(x)
+        encoded_x = self.transformer_encoder(embedded_x)
+        x = self.decoder(encoded_x)
 
         pass
 

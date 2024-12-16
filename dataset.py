@@ -13,6 +13,11 @@ def prepare_data(data_path):
     #  two or three lines of code should be sufficient.                            #
     ################################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    data = data.replace('\n\n', '#')
+    data = data.split('\x1f')
+    data = " ".join(data)
+    data = data.split('\\')
+    data = " ".join(data)
 
     pass
     
@@ -87,6 +92,15 @@ class HarryPotterDataset(torch.utils.data.Dataset):
         #  self.sequences_in_batch                                                     #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        num_batches = len(self.tokens) // self.batch_size
+        self.data = []
+        self.sequences_in_batch = []
+
+        for i in range(self.batch_size):
+            batch = self.tokens[i * num_batches:(i + 1) * num_batches]
+            batch_tensor = torch.LongTensor(batch)
+            self.data.append(batch_tensor)
+        self.sequences_in_batch = (len(batch)-2) // self.sequence_length+1
 
         pass
 
@@ -100,8 +114,8 @@ class HarryPotterDataset(torch.utils.data.Dataset):
         # TODO: return the total number of sequences in dataset                        #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
-        return 0
+        total_sequences = self.batch_size*self.sequences_in_batch
+        return total_sequences
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ################################################################################
@@ -116,6 +130,11 @@ class HarryPotterDataset(torch.utils.data.Dataset):
         #  Note the data length should be sequence_length + 1                          #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        sequence_idx = idx // self.batch_size
+        chunk_idx = idx % self.batch_size
+        datapart = self.data[chunk_idx]
+        data = datapart[sequence_idx*self.sequence_length:(sequence_idx+1)*self.sequence_length+1]
+
 
         pass
 
