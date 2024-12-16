@@ -13,10 +13,8 @@ def prepare_data(data_path):
     #  two or three lines of code should be sufficient.                            #
     ################################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-    data = data.replace('\n\n', '#')
-    data = data.split('\x1f')
-    data = " ".join(data)
-    data = data.split('\\')
+    data = data.replace('\n\n', '# ')
+    data = data.split()
     data = " ".join(data)
 
     pass
