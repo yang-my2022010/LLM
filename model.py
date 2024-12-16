@@ -72,10 +72,14 @@ class HarryPotterTransformer(nn.Module):
         # TODO: finish the forward pass                                                #
         ################################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        attn_mask = torch.ones((x.size(1), x.size(1)), dtype=torch.float32,device=x.device)
+        attn_mask.triu_(1)  
+        attn_mask = torch.where(attn_mask == 1, torch.ones((x.size(1), x.size(1)),device=x.device)*float('-inf'), attn_mask) 
+        
         embedded_x = self.embedding(x)
         pos_x = self.pos_encoding(embedded_x)
         pos_x = pos_x.permute(1,0,2)
-        encoded_x = self.transformer_encoder(pos_x)
+        encoded_x = self.transformer_encoder(pos_x,mask = attn_mask)
         encoded_x = encoded_x.permute(1,0,2)
         x = self.decoder(encoded_x)
 
